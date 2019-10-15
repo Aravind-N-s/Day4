@@ -1,8 +1,10 @@
 const {User} = require('../models/userModel')
+const {logger} = require('../../config/logger')
 module.exports.list = (req,res) => {
+  logger.info(req.params)
     User.find().sort({createdAt: -1})
     .then((users) => {
-        res.json(users)
+        res.send(users)
     })
     .catch((err) => {
         res.json(err)
@@ -12,12 +14,12 @@ module.exports.list = (req,res) => {
 module.exports.create = (req,res) =>{
     const body = req.body
     const user = new User(body)
-    user.user = user._id
     user.save()
     .then((user) => {
       res.json(user)
     })
     .catch((err) => {
+      console.log(err)
       res.json(err)
     })
 
@@ -58,21 +60,18 @@ module.exports.getFullname = (req, res) => {
   });
 }
 
-module.exports.getIfBday = (req,res) => {
-  User.birthday(Date.now,function(err, data) {
-    if(err)
-      return res.status(401).json(err)
-    res.json({data})
-  })
+module.exports.firstName = async (req,res) => {
+  const name = req.query.firstname
+  console.log(name)
+  try{
+    console.log(name)
+    const data = await User.nameFirst(name)
+    console.log(data)
+    if(data)
+      res.status('200').json(data);
+    res.status('404').send('Data Not Present')
+  }
+  catch(err){
+    logger.error(err.message)
+  }
 }
-
-// module.exports.getByLastName = (req, res) => {
-//   // It was earlier defined as a static method inside methods/index.js
-//   User.findByLastName("Ch", function(err, data) {
-//     if (err)
-//       return res
-//         .status(HttpStatus.BAD_REQUEST)
-//         .json({ message: "Lastname Mismatch" });
-//     res.status(HttpStatus.OK).json({ data });
-//   });
-// };

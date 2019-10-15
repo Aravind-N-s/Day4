@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 
 const userSchema = new Schema ({
   firstName:{
-      type: String
+    type: String
   },
   lastName:{
     type: String
@@ -23,23 +23,21 @@ const userSchema = new Schema ({
 })
 
 userSchema.methods.getIfBday = function() {
-  return this.DOB == Date.now;
+  return this.DOB
 };
 
-userSchema.static.birthday = function(id, DOB) {
-  const User = this
-  User.find({id})
-  .then(user => {
-    if(!user){
-      Promise.reject('error')
-    }
-    if(DOB == User.DOB){
-      Promise.resolve(true)
-    }else{
-      Promise.reject(false)
-    }
-  })
+userSchema.statics.nameFirst = function(name) {
+  //Promise
+  this.find({firstName : name},callback)
 };
+
+// userSchema.statics.nameFirst = new Promise(function (res,rej){
+//   cosnt name = 
+//   this.find({firstName: name}, (err, user) => {
+//     resolve(user)
+//     reject(err)
+//   })
+// })
 
 userSchema.virtual("fullName").get(function() {
   return this.firstName + " " + this.lastName;

@@ -1,19 +1,25 @@
 require('dotenv').config
 const mongoose = require('mongoose')
-
+const {logger} = require('./logger')
 mongoose.Promise = global.Promise
-
-mongoose.set('useFindAndModify', false)
-mongoose.set('useCreateIndex', true)
-mongoose.set('useUnifiedTopology', true)
+const options = {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    autoIndex: false,
+    reconnectTries: Number.MAX_VALUE,
+    reconnectInterval: 500,
+    useUnifiedTopology: true,
+    poolSize: 10
+  };
 
 //connect to db
-mongoose.connect(process.env.MONGODB_URI , { useNewUrlParser: true })
+mongoose.connect(process.env.MONGODB_URI , options)
     .then(() => {
-        console.log('Connected to the DB')
+        logger.info('Connected to the Database')
     })
     .catch((err) => {
-        console.log('ERROR connected to DB', err)
+        logger.fatal('ERROR connected to Database', err.message)
     })
 
 module.exports = {
